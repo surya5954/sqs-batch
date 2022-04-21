@@ -27,7 +27,7 @@ const serverlessConfiguration: AWS= {
           Type: 'AWS::SQS::Queue',
           Properties:{
               QueueName: 'demo-batch-queue',
-              VisibilityTimeout: 30,
+              VisibilityTimeout: 90,
               MessageRetentionPeriod: 345600,
               RedrivePolicy:{
                   deadLetterTargetArn: {
