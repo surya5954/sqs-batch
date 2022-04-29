@@ -8,14 +8,14 @@ import schema from './schema';
 const producer: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
     try{
         const { batchQueueUrl }  = process.env;
-        const {numberOfBatch, maxMessagesPerBatch, delaySeconds } = event.body;
+        const {numberOfBatch, delaySeconds } = event.body;
         const sqs = new SQS();
         const batchMessages = [];
     
         for(let msg= 0; msg < numberOfBatch; msg++){
             batchMessages.push({
                 Entries: [
-                    ...new Array(maxMessagesPerBatch).fill(0).map((_, index) =>{
+                    ...new Array(10).fill(0).map((_, index) =>{
                         return {
                             Id: 'messageId_'+ (index + 10 * msg),
                             MessageBody: `${index + 10 * msg}`,
@@ -35,7 +35,7 @@ const producer: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event
         }
         console.log("Message published to Queue");
         return formatJSONResponse({
-            message: `Send SQS message with total Batchs of ${numberOfBatch}, each batches having ${maxMessagesPerBatch} messages !`,
+            message: `Send SQS message with total Batchs of ${numberOfBatch}, each batches having 10 messages !`,
             batchQueueUrl
         });
      }catch(e){
