@@ -5,20 +5,21 @@ import { SQS } from 'aws-sdk';
 
 import schema from './schema';
 
-const hello: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
+const producer: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
     try{
         const { batchQueueUrl }  = process.env;
-    
+        const {numberOfBatch, maxMessagesPerBatch, delaySeconds } = event.body;
         const sqs = new SQS();
         const batchMessages = [];
     
-        for(let msg= 0; msg < 5;msg++){
+        for(let msg= 0; msg < numberOfBatch; msg++){
             batchMessages.push({
                 Entries: [
-                    ...new Array(10).fill(0).map((_, index) =>{
+                    ...new Array(maxMessagesPerBatch).fill(0).map((_, index) =>{
                         return {
                             Id: 'messageId_'+ (index + 10 * msg),
                             MessageBody: `${index + 10 * msg}`,
+                            DelaySeconds: delaySeconds
                         }
                     })
                 ],
@@ -34,7 +35,7 @@ const hello: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) =
         }
         console.log("Message published to Queue");
         return formatJSONResponse({
-            message: `Hello Sir! ${event.body.name}, welcome to the exciting Serverless world!`,
+            message: `Send SQS message with total Batchs of ${numberOfBatch}, each batches having ${maxMessagesPerBatch} messages !`,
             batchQueueUrl
         });
      }catch(e){
@@ -42,4 +43,4 @@ const hello: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) =
      }
 };
 
-export const main = middyfy(hello);
+export const main = middyfy(producer);

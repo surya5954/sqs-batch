@@ -5,7 +5,9 @@
   "main": "serverless.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "sls deploy --aws-profile personal"
+    "deploy": "sls deploy --aws-profile personal",
+    "docker:start": "docker run --name Fake-SQS -d -p 9324:9324  softwaremill/elasticmq", 
+    "start": "npm run docker:start && sls offline"
   },
   "engines": {
     "node": ">=14.15.0"
@@ -24,6 +26,7 @@
     "serverless": "^3.0.0",
     "serverless-esbuild": "^1.23.3",
     "serverless-offline": "^8.5.0",
+    "serverless-offline-sqs": "^6.0.0",
     "ts-node": "^10.4.0",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^4.1.3"
